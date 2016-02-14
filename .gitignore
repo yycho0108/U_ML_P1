@@ -1,7 +1,7 @@
 #results/logging
 *.txt
 *.png
-
+*.eps
 #swap files
 *~
 .*~

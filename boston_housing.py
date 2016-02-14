@@ -8,15 +8,15 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn import metrics
 from sklearn import grid_search
 from sklearn import cross_validation
-from sklearn.neighbors import KNeighborsRegressor
 
 ################################
 ### ADD EXTRA LIBRARIES HERE ###
 ################################
+from sklearn.neighbors import KNeighborsRegressor
+from matplotlib import cm
 
 def load_data():
     """Load the Boston dataset."""
-
     boston = datasets.load_boston()
     return boston
 
@@ -173,32 +173,6 @@ def model_complexity_graph(max_depth, train_err, test_err):
     pl.ylabel('Error')
     pl.show()
 
-# Simple Nearest-Neighbor Verification
-def nnVerify(city_data,x,y):
-    """Comparison against Most 'Similar' Data """
-    X, Y = city_data.data, city_data.target
-    similar_x = 0.0;
-    similar_y = 0.0;
-    err = None;
-    for _x, _y in zip(X,Y):
-        tmp_err = np.linalg.norm(np.subtract(x,_x))
-        if err is None or err > tmp_err:
-            err = tmp_err
-            similar_x = _x
-            similar_y = _y
-    print("X", x, "Y:" , y)
-    print("SX:",  similar_x, "SY:", similar_y)
-
-def nnVerify_2(city_data,x,y):
-    """ Using SKLearn's KNeighborsRegressor """
-    X,Y = city_data.data, city_data.target
-    clf = KNeighborsRegressor(n_neighbors=2)
-    clf.fit(X,Y)
-    y_pred = clf.predict(x)
-    print("KNeighborsRegressor")
-    print("Y pred(KNN) : ", y_pred)
-###################################
-
 def fit_predict_model(city_data):
     """Find and tune the optimal model. Make a prediction on housing data."""
 
@@ -239,6 +213,68 @@ def fit_predict_model(city_data):
     nnVerify(city_data,x,y)
     nnVerify_2(city_data,x,y)
 
+################################
+######## MY FUNCTIONS ##########
+################################
+
+# Simple Nearest-Neighbor Verification
+def nnVerify(city_data,x,y):
+    """Comparison against Most 'Similar' Data """
+    X, Y = city_data.data, city_data.target
+    similar_x = 0.0;
+    similar_y = 0.0;
+    err = None;
+    for _x, _y in zip(X,Y):
+        tmp_err = np.linalg.norm(np.subtract(x,_x))
+        if err is None or err > tmp_err:
+            err = tmp_err
+            similar_x = _x
+            similar_y = _y
+    print("X", x, "Y:" , y)
+    print("SX:",  similar_x, "SY:", similar_y)
+
+def nnVerify_2(city_data,x,y):
+    """ Using SKLearn's KNeighborsRegressor """
+    X,Y = city_data.data, city_data.target
+    clf = KNeighborsRegressor(n_neighbors=2)
+    clf.fit(X,Y)
+    y_pred = clf.predict(x)
+    print("KNeighborsRegressor")
+    print("Y pred(KNN) : ", y_pred)
+
+def identify_relevant(city_data):
+    X,Y = city_data.data, city_data.target
+    scatter_plot(X,Y)
+
+def scatter_plot(features,prices):
+    """Plot training and test error as a function of the training size."""
+
+    pl.figure()
+    pl.title('Decision Trees: Performance vs Feature')
+    feature_size = features.shape[1]
+    colR = np.random.rand(feature_size)
+    colG = np.random.rand(feature_size)
+    colB = np.random.rand(feature_size)
+    labels = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD','TAX', 'PTRATIO', 'B', 'LSTAT'] 
+    for i in range(feature_size):
+        feature = features[:,i]
+        feature -= np.min(features[:,i])
+        feature /= np.max(feature)
+        #pl.scatter(feature,prices,label=labels[i],c=(colR[i],colG[i],colB[i]),alpha=0.5)
+        pl.scatter(feature,prices,c=(colR[i],colG[i],colB[i]),alpha=1.0)
+        #pl.legend()
+        pl.xlabel(labels[i])
+        pl.ylabel('Price')
+        pl.show()
+   
+    pl.legend()
+    pl.xlabel('Feature')
+    pl.ylabel('Price')
+    pl.show()
+
+###################################
+
+
 #In the case of the documentation page for GridSearchCV, it might be the case that the example is just a demonstration of syntax for use of the function, rather than a statement about 
 def main():
     """Analyze the Boston housing data. Evaluate and validate the
@@ -249,6 +285,8 @@ def main():
     city_data = load_data()
     # Explore the data
     explore_city_data(city_data)
+    # Identify Relevant Features -- Added
+    identify_relevant(city_data)
     # Training/Test dataset split
     X_train, y_train, X_test, y_test = split_data(city_data)
     
