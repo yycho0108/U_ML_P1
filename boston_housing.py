@@ -243,14 +243,15 @@ def nnVerify_2(city_data,x,y):
     print("Y pred(KNN) : ", y_pred)
 
 def identify_relevant(city_data):
+    """Identify House Features Relevant to Output Prices"""
     X,Y = city_data.data, city_data.target
     scatter_plot(X,Y)
 
 def scatter_plot(features,prices):
-    """Plot training and test error as a function of the training size."""
+    """Plots Performance Against Features"""
 
     pl.figure()
-    pl.title('Decision Trees: Performance vs Feature')
+    pl.title('Decision Trees: Price vs Feature')
     feature_size = features.shape[1]
     colR = np.random.rand(feature_size)
     colG = np.random.rand(feature_size)
